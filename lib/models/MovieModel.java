@@ -7,7 +7,6 @@ class MovieModel {
   final String summary;
   final String mediumCoverImage;
   final String backgroundImage;
-  final int runtime;
 
   MovieModel({
     required this.id,
@@ -18,7 +17,6 @@ class MovieModel {
     required this.summary,
     required this.mediumCoverImage,
     required this.backgroundImage,
-    required this.runtime,
   });
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
@@ -31,7 +29,6 @@ class MovieModel {
       summary: json['summary'] ?? "",
       mediumCoverImage: json['medium_cover_image'],
       backgroundImage: json['background_image'],
-      runtime: json['runtime'] ?? 0,
     );
   }
 }

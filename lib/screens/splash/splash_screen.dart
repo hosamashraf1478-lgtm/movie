@@ -10,7 +10,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -18,9 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const OnboardingScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
       );
     });
   }
@@ -34,31 +31,25 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset("assets/images/login.png", height: 253, width: 253),
+
+            const SizedBox(height: 40),
 
 
-            const Icon(
-              Icons.play_circle_outline,
-              color: Color(0xffFFBB3B),
-              size: 90,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset("assets/images/Route.png", height: 73, width: 150),
+
+                const SizedBox(height: 10),
+
+                const Text(
+                  "Supervised by Mohamed Nabil",
+                  style: TextStyle(color: Colors.white54, fontSize: 16),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 20),
-
-            Image.asset(
-              "assets/images/Route.png",
-              height: 60,
-            ),
-
-            const SizedBox(height: 10),
-
-            const Text(
-              "Supervised by Mohamed Nabil",
-              style: TextStyle(
-                color: Colors.white54,
-                fontSize: 12,
-              ),
-            ),
-
           ],
         ),
       ),

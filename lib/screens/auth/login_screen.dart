@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart' show GoogleSignIn, GoogleSignInAccount;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:movie_app/screens/auth/forgot_password.dart';
 
@@ -154,7 +153,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 10),
 
-              /// Forget password button
               Align(
                 alignment: Alignment.centerRight,
 
