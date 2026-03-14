@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("assets/images/login.png", height: 253, width: 253),
+            Image.asset("assets/images/login.png", height: 118, width: 121),
 
             const SizedBox(height: 40),
 
@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset("assets/images/Route.png", height: 73, width: 150),
+                Image.asset("assets/images/Route.png", height: 73, width: 180),
 
                 const SizedBox(height: 10),
 

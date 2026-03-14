@@ -6,17 +6,11 @@ class ApiService {
   final String baseUrl = "https://movies-api.accel.li/api/v2/list_movies.json";
 
   Future<List<MovieModel>> fetchMovies() async {
-    try {
-      final response = await _dio.get(baseUrl);
-
-      if (response.statusCode == 200) {
-        List<dynamic> moviesData = response.data['data']['movies'];
-        return moviesData.map((movie) => MovieModel.fromJson(movie)).toList();
-      } else {
-        throw Exception("Failed to load movies");
-      }
-    } catch (e) {
-      throw Exception("Error: $e");
+    final response = await _dio.get('https://movies-api.accel.li/api/v2/list_movies.xml');
+    if (response.statusCode == 200) {
+      List moviesData = response.data['data']['movies'];
+      return moviesData.map((json) => MovieModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load movies');
     }
-  }
-}
+  }}
