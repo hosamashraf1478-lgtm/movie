@@ -28,29 +28,31 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: const Color(0xff121312),
 
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset("assets/images/login.png", height: 253, width: 253),
-
-            const SizedBox(height: 40),
-
-
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset("assets/images/Route.png", height: 73, width: 150),
-
-                const SizedBox(height: 10),
-
-                const Text(
-                  "Supervised by Mohamed Nabil",
-                  style: TextStyle(color: Colors.white54, fontSize: 16),
-                ),
-              ],
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Column(
+            children: [
+              Spacer(),
+              Image.asset("assets/images/login.png", height: 253, width: 253),
+              Spacer(),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/images/Route.png",
+                    height: 73,
+                    width: 150,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Supervised by Mohamed Nabil",
+                    style: TextStyle(color: Colors.white54, fontSize: 16),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

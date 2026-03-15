@@ -57,16 +57,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const LoginScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
-
     }
   }
+
   void previousPage() {
     if (_pageController.page!.toInt() > 0) {
       _pageController.previousPage(
@@ -86,109 +83,114 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           final data = onboardingData[index];
-          return SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 6,
-                  child: GestureDetector(
-                    onTap: nextPage,
-                    child: Image.asset(
-                      data["image"]!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
+          return Stack(
+            children: [
+              GestureDetector(
+                onTap: nextPage,
+                child: Image.asset(
+                  data["image"]!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+              ),
+
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(30),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        data["title"]!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      if (data["subtitle"] != "")
                         Text(
-                          data["title"]!,
+                          data["subtitle"]!,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            fontSize: 14,
+                            color: Colors.white70,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        if (data["subtitle"] != "")
-                          Text(
-                            data["subtitle"]!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.white70,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Row(
-                    children: [
-                      if (index > 0)
-                        Expanded(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFFFFB83B)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+
+                      const SizedBox(height: 20),
+
+                      Row(
+                        children: [
+                          if (index > 0)
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: Color(0xFFFFB83B),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                onPressed: previousPage,
+                                child: const Text(
+                                  "Back",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
                               ),
                             ),
-                            onPressed: previousPage,
-                            child: const Text(
-                              "Back",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
+
+                          if (index > 0) const SizedBox(width: 10),
+
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFFFB83B),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: nextPage,
+                              child: Text(
+                                index < onboardingData.length - 1
+                                    ? "Next"
+                                    : "Finish",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      if (index > 0) const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFB83B),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: nextPage,
-                          child: Text(
-                            index < onboardingData.length - 1
-                                ? "Next"
-                                : "Finish",
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-              ],
-
-            ),
-
+              ),
+            ],
           );
         },
       ),
-
     );
-
   }
 }
-

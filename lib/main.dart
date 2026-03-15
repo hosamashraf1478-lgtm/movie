@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'screens/splash/splash_screen.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,3 +21,11 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+/*
+
+flutter clean
+flutter pub get
+
+*/

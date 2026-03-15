@@ -14,51 +14,85 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   bool obscure = true;
+  bool isLoading = false;
 
   final auth = FirebaseAuth.instance;
 
   Future login() async {
+    FocusScope.of(context).unfocus();
 
-    await auth.signInWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
-    );
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter email and password")),
+      );
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const HomeScreen(),
-      ),
-    );
+      return;
+    }
+
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      await auth.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message = "Login Failed";
+
+      if (e.code == 'user-not-found') {
+        message = "No user found for that email";
+      }
+
+      if (e.code == 'wrong-password') {
+        message = "Wrong password provided";
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Something went wrong")));
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount user = await GoogleSignIn.instance
+          .authenticate();
 
-    // final GoogleSignIn googleSignIn = GoogleSignIn();
-    //
-    // final GoogleSignInAccount? googleUser =
-    // await googleSignIn.signIn();
-    //
-    // if (googleUser == null) return;
-    //
-    // await googleUser.authentication;
-    //
-    // final credential = GoogleAuthProvider.credential(
-    // );
-    //
-    // await auth.signInWithCredential(credential);
+      final GoogleSignInAuthentication auth = await user.authentication;
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const HomeScreen(),
-      ),
-    );
+      final credential = GoogleAuthProvider.credential(idToken: auth.idToken);
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   String currentLang = "EN";
@@ -70,8 +104,20 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    GoogleSignIn.instance.initialize();
+    super.initState();
+  }
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff121312),
 
@@ -80,15 +126,10 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 25),
 
           child: Column(
-
             children: [
-
               const SizedBox(height: 90),
 
-              Image.asset(
-                "assets/images/login.png",
-                height: 90,
-              ),
+              Image.asset("assets/images/login.png", height: 90),
 
               const SizedBox(height: 50),
 
@@ -100,8 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   filled: true,
                   fillColor: const Color(0xff282A28),
 
-                  prefixIcon:
-                  const Icon(Icons.email, color: Colors.white),
+                  prefixIcon: const Icon(Icons.email, color: Colors.white),
 
                   hintText: "Email",
                   hintStyle: const TextStyle(color: Colors.grey),
@@ -124,14 +164,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   filled: true,
                   fillColor: const Color(0xff282A28),
 
-                  prefixIcon:
-                  const Icon(Icons.lock, color: Colors.white),
+                  prefixIcon: const Icon(Icons.lock, color: Colors.white),
 
                   suffixIcon: IconButton(
                     icon: Icon(
-                      obscure
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      obscure ? Icons.visibility_off : Icons.visibility,
                       color: Colors.white,
                     ),
                     onPressed: () {
@@ -157,17 +194,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.centerRight,
 
                 child: TextButton(
-
                   onPressed: () {
-
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                        const ForgetPasswordScreen(),
+                        builder: (_) => const ForgetPasswordScreen(),
                       ),
                     );
-
                   },
 
                   child: const Text(
@@ -183,21 +216,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
 
                 child: ElevatedButton(
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffFFB83B),
-                    padding:
-                    const EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
 
-                  onPressed: login,
+                  onPressed: isLoading ? null : login,
 
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
-                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Login",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
 
@@ -207,60 +248,47 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
 
                 child: ElevatedButton(
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffFFB83B),
-                    padding:
-                    const EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
 
                   onPressed: () {
-
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                        const RegisterScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => RegisterScreen()),
                     );
-
                   },
 
                   child: const Text(
                     "Create Account",
                     style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
 
               const SizedBox(height: 25),
 
-              /// OR
               Row(
                 children: const [
-
                   Expanded(
-                      child: Divider(
-                        color: Color(0xffFFB83B),
-                        thickness: 1,
-                      )),
+                    child: Divider(color: Color(0xffFFB83B), thickness: 1),
+                  ),
 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
                       "OR",
-                      style: TextStyle(
-                          color: Color(0xffFFB83B)),
+                      style: TextStyle(color: Color(0xffFFB83B)),
                     ),
                   ),
 
                   Expanded(
-                      child: Divider(
-                        color: Color(0xffFFB83B),
-                        thickness: 1,
-                      )),
+                    child: Divider(color: Color(0xffFFB83B), thickness: 1),
+                  ),
                 ],
               ),
 
@@ -270,25 +298,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
 
                 child: ElevatedButton.icon(
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffFFB83B),
-                    padding:
-                    const EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
 
                   onPressed: signInWithGoogle,
 
-                  icon: Image.asset(
-                    "assets/images/Google.png",
-                    height: 25,
-                  ),
+                  icon: Image.asset("assets/images/Google.png", height: 25),
 
                   label: const Text(
                     "Login With Google",
                     style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -300,18 +324,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 15, vertical: 5),
+                    horizontal: 15,
+                    vertical: 5,
+                  ),
 
                   decoration: BoxDecoration(
-                    border: Border.all(
-                        color: const Color(0xffFFB83B)),
+                    border: Border.all(color: const Color(0xffFFB83B)),
                     borderRadius: BorderRadius.circular(20),
                   ),
 
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-
                       Image.asset(
                         currentLang == "EN"
                             ? "assets/images/EN.png"
@@ -323,8 +347,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       Text(
                         currentLang,
-                        style: const TextStyle(
-                            color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ],
                   ),
@@ -332,7 +355,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               const SizedBox(height: 30),
-
             ],
           ),
         ),

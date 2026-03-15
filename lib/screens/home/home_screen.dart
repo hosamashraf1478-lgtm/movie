@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/models/movie_model.dart';
 import 'package:movie_app/services/api_services.dart';
 import 'package:movie_app/widgets/movie_card.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -18,14 +19,36 @@ class HomeScreen extends StatelessWidget {
         future: ApiService().fetchMovies(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Color(0xFFFFBB3B)));
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFFFFBB3B)),
+            );
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: Colors.white)));
+            return Center(
+              child: Text(
+                "Error: ${snapshot.error}",
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
           }
 
-          final movies = snapshot.data!;
+          List blockedIds = [
+            75037,
+            75042,
+            75041,
+            75033,
+            75043,
+            75025,
+            75035,
+            75038,
+            75029,
+            75028,
+          ];
+
+          final movies = snapshot.data!
+              .where((movie) => !blockedIds.contains(movie.id))
+              .toList();
           return GridView.builder(
             padding: const EdgeInsets.all(10),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
