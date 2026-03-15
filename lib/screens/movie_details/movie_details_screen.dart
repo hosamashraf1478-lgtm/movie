@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../models/movie_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
   final MovieModel movie;
+
   const MovieDetailsScreen({super.key, required this.movie});
 
   @override
@@ -80,6 +82,58 @@ class MovieDetailsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+
+                  const SizedBox(height: 15),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: movie.genres
+                        .map(
+                          (genre) => Chip(
+                            label: Text(
+                              genre.toString(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.grey[800],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        final Uri url = Uri.parse(
+                          "https://www.youtube.com/watch?v=${movie.ytTrailerCode}",
+                        );
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } else {
+                          debugPrint("Could not launch $url");
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.play_circle_fill,
+                        color: Colors.black,
+                      ),
+                      label: const Text(
+                        "Watch Trailer",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFFBB3B),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+
                   const SizedBox(height: 20),
 
                   const Text(
