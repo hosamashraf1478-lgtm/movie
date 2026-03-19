@@ -26,10 +26,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 30),
 
             StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(user?.uid)
+                  .snapshots(),
               builder: (context, snapshot) {
                 String name = user?.displayName ?? 'User Name';
-                String avatar = user?.photoURL ?? 'https://i.ibb.co/L8N7p7v/avatar-1.png';
+                String avatar =
+                    user?.photoURL ?? 'https://i.ibb.co/L8N7p7v/avatar-1.png';
 
                 if (snapshot.hasData && snapshot.data!.exists) {
                   var data = snapshot.data!.data() as Map<String, dynamic>;
@@ -54,14 +58,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Text(
                               name,
                               style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Row(
                               children: [
-                                _buildLiveStat(user?.uid, "watchlist", "Watch List"),
+                                _buildLiveStat(
+                                  user?.uid,
+                                  "watchlist",
+                                  "Watch List",
+                                ),
                                 const SizedBox(width: 30),
                                 _buildLiveStat(user?.uid, "history", "History"),
                               ],
@@ -86,7 +95,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: () async {
                         final result = await Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const UpdateProfileScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const UpdateProfileScreen(),
+                          ),
                         );
                         if (result == true) {
                           setState(() {});
@@ -94,23 +105,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFFBB3B),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text("Edit Profile",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        "Edit Profile",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
-                      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/login',
+                        (route) => false,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE50914),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 20,
+                      ),
                     ),
                     child: const Icon(Icons.exit_to_app, color: Colors.white),
                   ),
@@ -154,13 +181,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildLiveStat(String? uid, String collection, String label) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(uid).collection(collection).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection(collection)
+          .snapshots(),
       builder: (context, snapshot) {
-        String count = snapshot.hasData ? snapshot.data!.docs.length.toString() : "0";
+        String count = snapshot.hasData
+            ? snapshot.data!.docs.length.toString()
+            : "0";
         return Column(
           children: [
-            Text(count, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+            Text(
+              count,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              label,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            ),
           ],
         );
       },
@@ -177,7 +220,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFFFFBB3B)));
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFFFFBB3B)),
+          );
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -188,11 +233,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Image.asset(
                   emptyStateImagePath,
                   width: 140,
-                  errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.movie_creation_outlined, size: 80, color: Colors.grey),
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.movie_creation_outlined,
+                    size: 80,
+                    color: Colors.grey,
+                  ),
                 ),
                 const SizedBox(height: 15),
-                const Text("No Movies Found", style: TextStyle(color: Colors.grey, fontSize: 16)),
+                const Text(
+                  "No Movies Found",
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                ),
               ],
             ),
           );

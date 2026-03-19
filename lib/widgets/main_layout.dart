@@ -24,10 +24,7 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           border: Border(top: BorderSide(color: Colors.white10, width: 0.5)),
@@ -52,10 +49,7 @@ class _MainLayoutState extends State<MainLayout> {
               activeIcon: Icon(Icons.home),
               label: 'Home',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
             BottomNavigationBarItem(
               icon: Icon(Icons.explore_outlined),
               activeIcon: Icon(Icons.explore),

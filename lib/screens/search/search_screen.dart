@@ -14,7 +14,6 @@ class _SearchScreenState extends State<SearchScreen> {
   List<MovieModel> searchResults = [];
   bool isLoading = false;
 
-  // دالة البحث اللي بتكلم الـ API
   void _onSearchChanged(String query) async {
     if (query.isEmpty) {
       setState(() {

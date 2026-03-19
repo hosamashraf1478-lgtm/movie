@@ -21,13 +21,15 @@ class MovieDetailsScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          // هنضيف أيقونة الـ Bookmark هنا عشان الـ Watchlist
           FutureBuilder<MovieModel?>(
             future: ApiService().fetchMovieDetails(movieId),
             builder: (context, snapshot) {
               if (!snapshot.hasData) return const SizedBox();
               return IconButton(
-                icon: const Icon(Icons.bookmark_border, color: Color(0xFFFFBB3B)),
+                icon: const Icon(
+                  Icons.bookmark_border,
+                  color: Color(0xFFFFBB3B),
+                ),
                 onPressed: () => toggleWatchlist(snapshot.data!),
               );
             },
@@ -38,11 +40,18 @@ class MovieDetailsScreen extends StatelessWidget {
         future: ApiService().fetchMovieDetails(movieId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.amber));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.amber),
+            );
           }
 
           if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(child: Text("Error loading details", style: TextStyle(color: Colors.white)));
+            return const Center(
+              child: Text(
+                "Error loading details",
+                style: TextStyle(color: Colors.white),
+              ),
+            );
           }
 
           final movie = snapshot.data!;
@@ -50,16 +59,22 @@ class MovieDetailsScreen extends StatelessWidget {
           return SingleChildScrollView(
             child: Column(
               children: [
-                // صورة الفيلم مع زرار تشغيل في النص زي الفجمبا
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.network(movie.poster, height: 450, width: double.infinity, fit: BoxFit.cover),
-                    // زرار الـ Play اللي في نص الصورة
+                    Image.network(
+                      movie.poster,
+                      height: 450,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                     IconButton(
-                      icon: const Icon(Icons.play_circle_fill, color: Color(0xFFFFBB3B), size: 80),
+                      icon: const Icon(
+                        Icons.play_circle_fill,
+                        color: Color(0xFFFFBB3B),
+                        size: 80,
+                      ),
                       onPressed: () {
-                        // هنا هنشغل الـ Trailer لما نركب الـ Youtube Player
                         print("Playing trailer: ${movie.trailerCode}");
                       },
                     ),
@@ -70,19 +85,37 @@ class MovieDetailsScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      Text(movie.title, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                      Text(
+                        movie.title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 10),
-                      Text(movie.year, style: const TextStyle(color: Colors.grey, fontSize: 16)),
+                      Text(
+                        movie.year,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        ),
+                      ),
                       const SizedBox(height: 20),
 
-                      // زرار الـ Watch الأساسي
                       SizedBox(
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () => addToHistory(movie), // لما يدوس واتش يروح للهيستوري
-                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE50914)),
-                          child: const Text("Watch", style: TextStyle(color: Colors.white, fontSize: 18)),
+                          onPressed: () => addToHistory(movie),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE50914),
+                          ),
+                          child: const Text(
+                            "Watch",
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
                         ),
                       ),
 
@@ -91,14 +124,34 @@ class MovieDetailsScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           _buildInfoIcon(Icons.favorite, "15"),
-                          _buildInfoIcon(Icons.access_time, "${movie.runtime} min"),
+                          _buildInfoIcon(
+                            Icons.access_time,
+                            "${movie.runtime} min",
+                          ),
                           _buildInfoIcon(Icons.star, movie.rating.toString()),
                         ],
                       ),
                       const SizedBox(height: 30),
-                      const Align(alignment: Alignment.centerLeft, child: Text("Storyline", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Storyline",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 10),
-                      Text(movie.description, style: const TextStyle(color: Colors.grey, fontSize: 15, height: 1.5)),
+                      Text(
+                        movie.description,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 15,
+                          height: 1.5,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -120,7 +173,6 @@ class MovieDetailsScreen extends StatelessWidget {
     );
   }
 
-  // دالة إضافة للـ Watchlist
   void toggleWatchlist(MovieModel movie) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     await FirebaseFirestore.instance

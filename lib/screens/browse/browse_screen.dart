@@ -25,7 +25,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
   ];
   String selectedGenre = "Action";
 
-  // دالة تشغيل الفيلم (Play)
   Future<void> _playMovie(String? url) async {
     if (url == null || url.isEmpty) return;
     final Uri uri = Uri.parse(url);
@@ -38,7 +37,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
     }
   }
 
-  // دالة الحفظ في الواتش ليست (Firebase)
   void _addToWatchlist(MovieModel movie) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
@@ -69,7 +67,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
       body: Column(
         children: [
           const SizedBox(height: 50),
-          // قائمة التصنيفات (Genres)
           SizedBox(
             height: 45,
             child: ListView.builder(
@@ -106,7 +103,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
           const SizedBox(height: 20),
 
-          // شبكة الأفلام (Movie Grid)
           Expanded(
             child: FutureBuilder<List<MovieModel>>(
               future: ApiService().fetchMoviesByCategory(selectedGenre),
@@ -132,13 +128,11 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     final movie = movies[index];
                     return Stack(
                       children: [
-                        // كارت الفيلم (عند الضغط يفتح الفيلم)
                         GestureDetector(
                           onTap: () => _playMovie(movie.url),
                           child: MovieCard(movie: movie),
                         ),
 
-                        // أيقونة الحفظ (Bookmark)
                         Positioned(
                           top: 8,
                           left: 8,
