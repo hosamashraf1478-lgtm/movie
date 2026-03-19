@@ -12,7 +12,9 @@ class UpdateProfileScreen extends StatefulWidget {
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final user = FirebaseAuth.instance.currentUser;
+
+  User? get user => FirebaseAuth.instance.currentUser;
+
   String? _selectedAvatarUrl;
 
   final List<String> _avatars = [
@@ -30,12 +32,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // تعبئة البيانات الحالية لليوزر
     _nameController.text = user?.displayName ?? "";
     _selectedAvatarUrl = user?.photoURL ?? _avatars[0];
   }
 
   Future<void> _updateProfile() async {
+    if (user == null) return;
     try {
       await user?.updateDisplayName(_nameController.text);
       await user?.updatePhotoURL(_selectedAvatarUrl);
@@ -64,6 +66,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   }
 
   void _showDeleteDialog() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -87,21 +91,40 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               backgroundColor: const Color(0xFFE5193E),
             ),
             onPressed: () async {
+              if (currentUser == null) {
+                print("Error: User is null");
+                return;
+              }
+
               try {
                 await FirebaseFirestore.instance
                     .collection('users')
-                    .doc(user!.uid)
+                    .doc(currentUser.uid)
                     .delete();
-                await user?.delete();
-                Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil('/login', (route) => false);
+
+                await currentUser.delete();
+
+                if (context.mounted) {
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil('/login', (route) => false);
+                }
+              } on FirebaseAuthException catch (e) {
+                if (e.code == 'requires-recent-login') {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "Please re-login to delete account safely.",
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    Navigator.pop(context);
+                  }
+                }
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Please re-login to delete account"),
-                  ),
-                );
+                print("Delete Error: $e");
               }
             },
             child: const Text("Delete", style: TextStyle(color: Colors.white)),
@@ -133,34 +156,24 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            // الأفاتار الكبير المختار
             CircleAvatar(
               radius: 65,
               backgroundColor: Colors.transparent,
-              backgroundImage: NetworkImage(_selectedAvatarUrl!),
+              backgroundImage: NetworkImage(_selectedAvatarUrl ?? _avatars[0]),
             ),
             const SizedBox(height: 40),
-
-            // حقل الاسم
             _buildTextField(_nameController, "Full Name", Icons.person),
             const SizedBox(height: 20),
-
             _buildTextField(_phoneController, "Phone Number", Icons.phone),
             const SizedBox(height: 20),
-
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Reset Password",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
             const SizedBox(height: 30),
-
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
@@ -200,9 +213,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 },
               ),
             ),
-
             const SizedBox(height: 40),
-
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -225,8 +236,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               ),
             ),
             const SizedBox(height: 15),
-
-            // زرار التحديث
             SizedBox(
               width: double.infinity,
               height: 55,
