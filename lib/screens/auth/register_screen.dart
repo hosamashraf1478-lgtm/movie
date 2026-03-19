@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterScreen extends StatefulWidget {
-    RegisterScreen({super.key});
+  RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -85,23 +85,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:   Color(0xff121312),
+      backgroundColor: Color(0xff121312),
       appBar: AppBar(
-        backgroundColor:   Color(0xff121312),
+        backgroundColor: Color(0xff121312),
         elevation: 0,
         leading: IconButton(
-          icon:   Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title:   Text("Register", style: TextStyle(color: Colors.white)),
+        title: Text("Register", style: TextStyle(color: Colors.white)),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding:   EdgeInsets.symmetric(horizontal: 25),
+          padding: EdgeInsets.symmetric(horizontal: 25),
           child: Column(
             children: [
-                SizedBox(height: 20),
-                Row(
+              SizedBox(height: 20),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
@@ -120,24 +120,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ],
               ),
-                SizedBox(height: 10),
-                Text("Avatar", style: TextStyle(color: Colors.white)),
-                SizedBox(height: 30),
+              SizedBox(height: 10),
+              Text("Avatar", style: TextStyle(color: Colors.white)),
+              SizedBox(height: 30),
 
               buildField(Icons.person, "Name", nameController),
-                SizedBox(height: 15),
+              SizedBox(height: 15),
               buildField(
                 Icons.email,
                 "Email",
                 emailController,
                 type: TextInputType.emailAddress,
               ),
-                SizedBox(height: 15),
+              SizedBox(height: 15),
 
               buildPasswordField("Password", passwordController, obscure1, () {
                 setState(() => obscure1 = !obscure1);
               }),
-                SizedBox(height: 15),
+              SizedBox(height: 15),
 
               buildPasswordField(
                 "Confirm Password",
@@ -147,7 +147,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   setState(() => obscure2 = !obscure2);
                 },
               ),
-                SizedBox(height: 15),
+              SizedBox(height: 15),
 
               buildField(
                 Icons.phone,
@@ -155,21 +155,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 phoneController,
                 type: TextInputType.phone,
               ),
-                SizedBox(height: 25),
+              SizedBox(height: 25),
 
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:   Color(0xffFFB83B),
-                    padding:   EdgeInsets.symmetric(vertical: 15),
+                    backgroundColor: Color(0xffFFB83B),
+                    padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                   onPressed: isLoading ? null : register,
                   child: isLoading
-                      ?   SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
@@ -177,7 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                      :   Text(
+                      : Text(
                           "Create Account",
                           style: TextStyle(
                             color: Colors.black,
@@ -187,32 +187,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-                SizedBox(height: 15),
+              SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                    Text(
+                  Text(
                     "Already Have Account ?",
                     style: TextStyle(color: Colors.white),
                   ),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child:   Text(
+                    child: Text(
                       "Login",
                       style: TextStyle(color: Color(0xffFFB83B)),
                     ),
                   ),
                 ],
               ),
-                SizedBox(height: 20),
+              SizedBox(height: 20),
 
               Container(
-                padding:   EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  border: Border.all(color:   Color(0xffFFB83B)),
+                  border: Border.all(color: Color(0xffFFB83B)),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -222,19 +219,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       "assets/images/EN.png",
                       height: 25,
                       errorBuilder: (c, e, s) =>
-                            Icon(Icons.flag, color: Colors.white),
+                          Icon(Icons.flag, color: Colors.white),
                     ),
-                      SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Image.asset(
                       "assets/images/EG.png",
                       height: 25,
                       errorBuilder: (c, e, s) =>
-                            Icon(Icons.flag, color: Colors.white),
+                          Icon(Icons.flag, color: Colors.white),
                     ),
                   ],
                 ),
               ),
-                SizedBox(height: 30),
+              SizedBox(height: 30),
             ],
           ),
         ),
@@ -251,13 +248,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TextField(
       controller: controller,
       keyboardType: type,
-      style:   TextStyle(color: Colors.white),
+      style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: true,
-        fillColor:   Color(0xff282A28),
+        fillColor: Color(0xff282A28),
         prefixIcon: Icon(icon, color: Colors.white),
         hintText: text,
-        hintStyle:   TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
@@ -275,11 +272,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TextField(
       controller: controller,
       obscureText: obscure,
-      style:   TextStyle(color: Colors.white),
+      style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: true,
-        fillColor:   Color(0xff282A28),
-        prefixIcon:   Icon(Icons.lock, color: Colors.white),
+        fillColor: Color(0xff282A28),
+        prefixIcon: Icon(Icons.lock, color: Colors.white),
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off : Icons.visibility,
@@ -288,7 +285,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           onPressed: press,
         ),
         hintText: text,
-        hintStyle:   TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,

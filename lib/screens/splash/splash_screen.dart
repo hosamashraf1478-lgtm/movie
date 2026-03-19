@@ -41,8 +41,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 children: [
                   Image.asset(
                     "assets/images/Route.png",
-                    height: 73,
-                    width: 150,
+                    height: 76,
+                    width: 180,
                   ),
                   const SizedBox(height: 10),
                   const Text(

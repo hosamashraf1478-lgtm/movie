@@ -1,37 +1,54 @@
 class MovieModel {
   final int id;
   final String title;
+  final String url;
+  final String mediumCoverImage;
   final String year;
   final double rating;
-  final List<dynamic> genres;
-  final String summary;
-  final String mediumCoverImage;
-  final String backgroundImage;
   final int runtime;
-  final String ytTrailerCode;
+  final String poster;
+  final String description;
+  final String trailerCode;
 
   MovieModel({
     required this.id,
     required this.title,
+    required this.url,
+    required this.mediumCoverImage,
     required this.year,
     required this.rating,
-    required this.genres,
-    required this.summary,
-    required this.mediumCoverImage,
-    required this.backgroundImage,
     required this.runtime,
-    required this.ytTrailerCode,
+    required this.poster,
+    required this.description,
+    required this.trailerCode,
   });
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(
-      id: json['id'],
-      title: json['title'] ?? "",
-      backgroundImage: json['large_cover_image'] ?? "",
-      rating: (json['rating'] ?? 0).toDouble(),
+      id: json['id'] ?? 0,
+      title: json['title'] ?? 'No Title',
+      year: json['year']?.toString() ?? 'N/A',
+      url: json['url'] ?? '',
+      mediumCoverImage: json['medium_cover_image'] ?? '',
+      rating: (json['rating'] ?? 0.0).toDouble(),
       runtime: json['runtime'] ?? 0,
-      summary: json['summary'] ?? "",
-      genres: json['genres'] != null ? List<String>.from(json['genres']) : [],
-      ytTrailerCode: json['yt_trailer_code'] ?? "", year: '', mediumCoverImage: '',
+      poster: json['medium_cover_image'] ?? json['large_cover_image'] ?? '',
+      description: json['description_full'] ?? '',
+      trailerCode: json['yt_trailer_code'] ?? '',
     );
-  }}
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'year': year,
+      'rating': rating,
+      'runtime': runtime,
+      'description_full': description,
+      'yt_trailer_code': trailerCode,
+      'url': url,
+      'medium_cover_image': mediumCoverImage,
+    };
+  }
+}

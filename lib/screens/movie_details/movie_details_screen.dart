@@ -1,164 +1,143 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../models/movie_model.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:movie_app/models/movie_model.dart';
+import 'package:movie_app/services/api_services.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
-  final MovieModel movie;
+  final int movieId;
 
-  const MovieDetailsScreen({super.key, required this.movie});
+  const MovieDetailsScreen({super.key, required this.movieId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF121312),
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 300,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Image.network(
-                movie.backgroundImage,
-                fit: BoxFit.cover,
-                loadingBuilder:
-                    (
-                      BuildContext context,
-                      Widget child,
-                      ImageChunkEvent? loadingProgress,
-                    ) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        color: Color(0xff121312),
-                        height: double.infinity,
-                        width: double.infinity,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            color: const Color(0xFFFFBB3B),
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        ),
-                      );
-                    },
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    movie.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      const Icon(Icons.star, color: Color(0xFFFFBB3B)),
-                      Text(
-                        " ${movie.rating}",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      const Icon(Icons.access_time, color: Colors.white),
-                      Text(
-                        " ${movie.runtime} min",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 15),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: movie.genres
-                        .map(
-                          (genre) => Chip(
-                            label: Text(
-                              genre.toString(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.grey[800],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        final Uri url = Uri.parse(
-                          "https://www.youtube.com/watch?v=${movie.ytTrailerCode}",
-                        );
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(
-                            url,
-                            mode: LaunchMode.externalApplication,
-                          );
-                        } else {
-                          debugPrint("Could not launch $url");
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.play_circle_fill,
-                        color: Colors.black,
-                      ),
-                      label: const Text(
-                        "Watch Trailer",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFFBB3B),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    "Summary",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    movie.summary,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      height: 1.5,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          // هنضيف أيقونة الـ Bookmark هنا عشان الـ Watchlist
+          FutureBuilder<MovieModel?>(
+            future: ApiService().fetchMovieDetails(movieId),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const SizedBox();
+              return IconButton(
+                icon: const Icon(Icons.bookmark_border, color: Color(0xFFFFBB3B)),
+                onPressed: () => toggleWatchlist(snapshot.data!),
+              );
+            },
           ),
         ],
       ),
+      body: FutureBuilder<MovieModel?>(
+        future: ApiService().fetchMovieDetails(movieId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator(color: Colors.amber));
+          }
+
+          if (snapshot.hasError || !snapshot.hasData) {
+            return const Center(child: Text("Error loading details", style: TextStyle(color: Colors.white)));
+          }
+
+          final movie = snapshot.data!;
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                // صورة الفيلم مع زرار تشغيل في النص زي الفجمبا
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.network(movie.poster, height: 450, width: double.infinity, fit: BoxFit.cover),
+                    // زرار الـ Play اللي في نص الصورة
+                    IconButton(
+                      icon: const Icon(Icons.play_circle_fill, color: Color(0xFFFFBB3B), size: 80),
+                      onPressed: () {
+                        // هنا هنشغل الـ Trailer لما نركب الـ Youtube Player
+                        print("Playing trailer: ${movie.trailerCode}");
+                      },
+                    ),
+                  ],
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Text(movie.title, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 10),
+                      Text(movie.year, style: const TextStyle(color: Colors.grey, fontSize: 16)),
+                      const SizedBox(height: 20),
+
+                      // زرار الـ Watch الأساسي
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () => addToHistory(movie), // لما يدوس واتش يروح للهيستوري
+                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE50914)),
+                          child: const Text("Watch", style: TextStyle(color: Colors.white, fontSize: 18)),
+                        ),
+                      ),
+
+                      const SizedBox(height: 25),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildInfoIcon(Icons.favorite, "15"),
+                          _buildInfoIcon(Icons.access_time, "${movie.runtime} min"),
+                          _buildInfoIcon(Icons.star, movie.rating.toString()),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+                      const Align(alignment: Alignment.centerLeft, child: Text("Storyline", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))),
+                      const SizedBox(height: 10),
+                      Text(movie.description, style: const TextStyle(color: Colors.grey, fontSize: 15, height: 1.5)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
+  }
+
+  Widget _buildInfoIcon(IconData icon, String label) {
+    return Column(
+      children: [
+        Icon(icon, color: const Color(0xFFFFBB3B), size: 28),
+        const SizedBox(height: 8),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 14)),
+      ],
+    );
+  }
+
+  // دالة إضافة للـ Watchlist
+  void toggleWatchlist(MovieModel movie) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('watchlist')
+        .doc(movie.id.toString())
+        .set(movie.toJson());
+  }
+
+  void addToHistory(MovieModel movie) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('history')
+        .doc(movie.id.toString())
+        .set(movie.toJson());
   }
 }

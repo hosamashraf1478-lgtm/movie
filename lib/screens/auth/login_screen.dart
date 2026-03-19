@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:movie_app/screens/auth/forgot_password.dart';
+import 'package:movie_app/widgets/main_layout.dart';
 
 import 'register_screen.dart';
 import '../home/home_screen.dart';
@@ -45,9 +46,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const MainLayout()),
       );
-    } on FirebaseAuthException catch (e) {
+
+    }
+    on FirebaseAuthException catch (e) {
       String message = "Login Failed";
 
       if (e.code == 'user-not-found') {
@@ -85,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => HomeScreen()),
       );
     } catch (e) {
       print(e);
@@ -272,8 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 25),
 
-
-              Row (
+              Row(
                 children: const [
                   Expanded(
                     child: Divider(color: Color(0xffFFB83B), thickness: 1),
