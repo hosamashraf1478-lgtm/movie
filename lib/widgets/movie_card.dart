@@ -10,8 +10,7 @@ class MovieCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // الجزء بتاع الصورة والريت
-        Expanded( // دي أهم حاجة عشان الصورة تاخد المساحة المتاحة بس وم تضربش إيرور
+        Expanded(
           child: Stack(
             children: [
               Container(

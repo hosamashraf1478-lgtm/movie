@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           return Stack(
             children: [
-              /// 🔥 الخلفية
+
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
                 child: Container(
@@ -65,13 +65,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              /// 🔥 المحتوى
               SafeArea(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height,
+                      minHeight: MediaQuery
+                          .of(context)
+                          .size
+                          .height,
                     ),
                     child: IntrinsicHeight(
                       child: Column(
@@ -83,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 234,
                           ),
 
-                          /// 🎬 Slider
                           SizedBox(
                             height: 380,
                             child: PageView.builder(
@@ -139,7 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
 
-                                      /// ⭐ Rating
                                       Positioned(
                                         top: 35,
                                         left: 25,
@@ -187,7 +187,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 280,
                           ),
 
-                          /// 🎯 Section Title
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 30, 20, 15),
                             child: Row(
@@ -202,13 +201,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 InkWell(
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          SeeMoreScreen(movies: movies),
-                                    ),
-                                  ),
+                                  onTap: () =>
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              SeeMoreScreen(movies: movies),
+                                        ),
+                                      ),
                                   child: const Text(
                                     "See More >",
                                     style:
@@ -219,7 +219,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
 
-                          /// 🎬 Movies List
                           SizedBox(
                             height: 220,
                             child: ListView.builder(
