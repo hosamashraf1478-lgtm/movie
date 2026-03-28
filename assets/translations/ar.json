@@ -1,0 +1,15 @@
+{
+  "movie_app": "تطبيق الأفلام",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "forget_password": "نسيت كلمة المرور؟",
+  "login": "تسجيل الدخول",
+  "create_account": "إنشاء حساب",
+  "or": "أو",
+  "login_with_google": "تسجيل الدخول بجوجل",
+  "enter_email_password": "يرجى إدخال البريد الإلكتروني وكلمة المرور",
+  "login_failed": "فشل تسجيل الدخول",
+  "no_user_found": "لم يتم العثور على حساب",
+  "wrong_password": "كلمة المرور غير صحيحة",
+  "something_went_wrong": "حدث خطأ ما"
+}

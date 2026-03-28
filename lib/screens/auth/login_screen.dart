@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:movie_app/screens/auth/forgot_password.dart';
 import 'package:movie_app/widgets/main_layout.dart';
 
 import 'register_screen.dart';
-import '../home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,9 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).unfocus();
 
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter email and password")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("enter_email_password".tr())));
 
       return;
     }
@@ -44,72 +44,83 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passwordController.text.trim(),
       );
 
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MainLayout()),
       );
-
-    }
-    on FirebaseAuthException catch (e) {
-      String message = "Login Failed";
+    } on FirebaseAuthException catch (e) {
+      String message = "login_failed".tr();
 
       if (e.code == 'user-not-found') {
-        message = "No user found for that email";
+        message = "no_user_found".tr();
       }
 
       if (e.code == 'wrong-password') {
-        message = "Wrong password provided";
+        message = "wrong_password".tr();
       }
 
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Something went wrong")));
+      ).showSnackBar(SnackBar(content: Text("something_went_wrong".tr())));
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
-  Future signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount user = await GoogleSignIn.instance
-          .authenticate();
+      final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
-      final GoogleSignInAuthentication auth = await user.authentication;
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
 
-      final credential = GoogleAuthProvider.credential(idToken: auth.idToken);
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: null,
+        idToken: googleAuth.idToken,
+      );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
 
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomeScreen()),
+        MaterialPageRoute(builder: (_) => const MainLayout()),
       );
     } catch (e) {
-      print(e);
+      debugPrint("Google Sign-In Error: ${e.toString()}");
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
-  String currentLang = "EN";
-
   void changeLanguage() {
-    setState(() {
-      currentLang = currentLang == "EN" ? "AR" : "EN";
-    });
+    if (context.locale == const Locale('en')) {
+      context.setLocale(const Locale('ar'));
+    } else {
+      context.setLocale(const Locale('en'));
+    }
   }
 
   @override
   void initState() {
-    GoogleSignIn.instance.initialize();
     super.initState();
+
+    GoogleSignIn.instance.initialize();
   }
 
   @override
@@ -121,6 +132,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isEn = context.locale == const Locale('en');
+
     return Scaffold(
       backgroundColor: const Color(0xff121312),
 
@@ -146,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   prefixIcon: const Icon(Icons.email, color: Colors.white),
 
-                  hintText: "Email",
+                  hintText: "email".tr(),
                   hintStyle: const TextStyle(color: Colors.grey),
 
                   border: OutlineInputBorder(
@@ -181,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
 
-                  hintText: "Password",
+                  hintText: "password".tr(),
                   hintStyle: const TextStyle(color: Colors.grey),
 
                   border: OutlineInputBorder(
@@ -194,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 10),
 
               Align(
-                alignment: Alignment.centerRight,
+                alignment: isEn ? Alignment.centerRight : Alignment.centerLeft,
 
                 child: TextButton(
                   onPressed: () {
@@ -206,9 +219,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   },
 
-                  child: const Text(
-                    "Forget Password ?",
-                    style: TextStyle(color: Color(0xffFFB83B)),
+                  child: Text(
+                    "forget_password".tr(),
+                    style: const TextStyle(color: Color(0xffFFB83B)),
                   ),
                 ),
               ),
@@ -235,9 +248,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text(
-                          "Login",
-                          style: TextStyle(
+                      : Text(
+                          "login".tr(),
+                          style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
@@ -259,13 +272,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => RegisterScreen()),
+                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
                     );
                   },
 
-                  child: const Text(
-                    "Create Account",
-                    style: TextStyle(
+                  child: Text(
+                    "create_account".tr(),
+                    style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -276,20 +289,20 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 25),
 
               Row(
-                children: const [
-                  Expanded(
+                children: [
+                  const Expanded(
                     child: Divider(color: Color(0xffFFB83B), thickness: 1),
                   ),
 
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
-                      "OR",
-                      style: TextStyle(color: Color(0xffFFB83B)),
+                      "or".tr(),
+                      style: const TextStyle(color: Color(0xffFFB83B)),
                     ),
                   ),
 
-                  Expanded(
+                  const Expanded(
                     child: Divider(color: Color(0xffFFB83B), thickness: 1),
                   ),
                 ],
@@ -310,9 +323,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   icon: Image.asset("assets/images/Google.png", height: 25),
 
-                  label: const Text(
-                    "Login With Google",
-                    style: TextStyle(
+                  label: Text(
+                    "login_with_google".tr(),
+                    style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -340,16 +353,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Image.asset(
-                        currentLang == "EN"
-                            ? "assets/images/EN.png"
-                            : "assets/images/EG.png",
+                        isEn ? "assets/images/EN.png" : "assets/images/EG.png",
                         height: 25,
                       ),
 
                       const SizedBox(width: 10),
 
                       Text(
-                        currentLang,
+                        isEn ? "English" : "العربية",
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],

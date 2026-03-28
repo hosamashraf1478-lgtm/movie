@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:movie_app/models/movie_model.dart';
 import 'package:movie_app/widgets/movie_card.dart';
+import 'package:movie_app/screens/movie_details/movie_details_screen.dart';
 import 'update_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -99,9 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             builder: (context) => const UpdateProfileScreen(),
                           ),
                         );
-                        if (result == true) {
-                          setState(() {});
-                        }
+                        if (result == true) setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFFBB3B),
@@ -261,7 +260,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           itemCount: moviesDocs.length,
           itemBuilder: (context, index) {
             final data = moviesDocs[index].data() as Map<String, dynamic>;
-            return MovieCard(movie: MovieModel.fromJson(data));
+            final movie = MovieModel.fromJson(data);
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MovieDetailsScreen(movie: movie),
+                  ),
+                );
+              },
+              child: MovieCard(movie: movie),
+            );
           },
         );
       },

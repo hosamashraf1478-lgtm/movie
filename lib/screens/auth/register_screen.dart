@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({super.key});
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -19,6 +19,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool obscure2 = true;
   bool isLoading = false;
 
+  String currentLang = "EN";
+
+  final Map<String, Map<String, String>> translation = {
+    "EN": {
+      "title": "Register",
+      "avatar": "Avatar",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "confirm": "Confirm Password",
+      "phone": "Phone Number",
+      "create": "Create Account",
+      "have_account": "Already Have Account ?",
+      "login": "Login",
+      "error_fields": "Please fill all fields",
+      "error_match": "Passwords do not match",
+      "error_short": "Password must be at least 8 characters",
+    },
+    "AR": {
+      "title": "إنشاء حساب",
+      "avatar": "الصورة الشخصية",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "confirm": "تأكيد كلمة المرور",
+      "phone": "رقم الهاتف",
+      "create": "إنشاء حساب",
+      "have_account": "لديك حساب بالفعل؟",
+      "login": "تسجيل الدخول",
+      "error_fields": "يرجى ملء جميع الحقول",
+      "error_match": "كلمات المرور غير متطابقة",
+      "error_short": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+    }
+  };
+
+  void changeLanguage(String lang) {
+    setState(() {
+      currentLang = lang;
+    });
+  }
+
   @override
   void dispose() {
     nameController.dispose();
@@ -30,21 +71,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future register() async {
+    var words = translation[currentLang]!;
+
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         phoneController.text.isEmpty) {
-      showError("يرجى ملء جميع الحقول");
+      showError(words["error_fields"]!);
       return;
     }
 
     if (passwordController.text != confirmPasswordController.text) {
-      showError("كلمات المرور غير متطابقة");
+      showError(words["error_match"]!);
       return;
     }
 
     if (passwordController.text.length < 8) {
-      showError("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+      showError(words["error_short"]!);
       return;
     }
 
@@ -60,17 +103,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Navigator.pop(context);
       }
     } on FirebaseAuthException catch (e) {
-      String message = "حدث خطأ ما";
+      String message = currentLang == "EN" ? "An error occurred" : "حدث خطأ ما";
       if (e.code == 'email-already-in-use') {
-        message = "هذا البريد الإلكتروني مسجل بالفعل";
+        message = currentLang == "EN" ? "Email already in use" : "هذا البريد الإلكتروني مسجل بالفعل";
       } else if (e.code == 'invalid-email') {
-        message = "صيغة البريد الإلكتروني غير صحيحة";
+        message = currentLang == "EN" ? "Invalid email format" : "صيغة البريد الإلكتروني غير صحيحة";
       } else if (e.code == 'weak-password') {
-        message = "كلمة المرور ضعيفة جداً";
+        message = currentLang == "EN" ? "Password is too weak" : "كلمة المرور ضعيفة جداً";
       }
       showError(message);
     } catch (e) {
-      showError("تعذر الاتصال بالخادم");
+      showError(currentLang == "EN" ? "Connection error" : "تعذر الاتصال بالخادم");
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -84,26 +127,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var words = translation[currentLang]!;
+
     return Scaffold(
-      backgroundColor: Color(0xff121312),
+      backgroundColor: const Color(0xff121312),
       appBar: AppBar(
-        backgroundColor: Color(0xff121312),
+        backgroundColor: const Color(0xff121312),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("Register", style: TextStyle(color: Colors.white)),
+        title: Text(words["title"]!, style: const TextStyle(color: Colors.white)),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 25),
+          padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: const [
                   CircleAvatar(
                     radius: 35,
                     backgroundImage: AssetImage("assets/images/avatar1.png"),
@@ -120,118 +166,125 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              Text("Avatar", style: TextStyle(color: Colors.white)),
-              SizedBox(height: 30),
+              const SizedBox(height: 10),
+              Text(words["avatar"]!, style: const TextStyle(color: Colors.white)),
+              const SizedBox(height: 30),
 
-              buildField(Icons.person, "Name", nameController),
-              SizedBox(height: 15),
+              buildField(Icons.person, words["name"]!, nameController),
+              const SizedBox(height: 15),
               buildField(
                 Icons.email,
-                "Email",
+                words["email"]!,
                 emailController,
                 type: TextInputType.emailAddress,
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
-              buildPasswordField("Password", passwordController, obscure1, () {
+              buildPasswordField(words["password"]!, passwordController, obscure1, () {
                 setState(() => obscure1 = !obscure1);
               }),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               buildPasswordField(
-                "Confirm Password",
+                words["confirm"]!,
                 confirmPasswordController,
                 obscure2,
-                () {
+                    () {
                   setState(() => obscure2 = !obscure2);
                 },
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               buildField(
                 Icons.phone,
-                "Phone Number",
+                words["phone"]!,
                 phoneController,
                 type: TextInputType.phone,
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xffFFB83B),
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    backgroundColor: const Color(0xffFFB83B),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                   onPressed: isLoading ? null : register,
                   child: isLoading
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.black,
-                            strokeWidth: 2,
-                          ),
-                        )
+                      ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                      strokeWidth: 2,
+                    ),
+                  )
                       : Text(
-                          "Create Account",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    words["create"]!,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Already Have Account ?",
-                    style: TextStyle(color: Colors.white),
+                    words["have_account"]!,
+                    style: const TextStyle(color: Colors.white),
                   ),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: Text(
-                      "Login",
-                      style: TextStyle(color: Color(0xffFFB83B)),
+                      words["login"]!,
+                      style: const TextStyle(color: Color(0xffFFB83B)),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Color(0xffFFB83B)),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(
-                      "assets/images/EN.png",
-                      height: 25,
-                      errorBuilder: (c, e, s) =>
-                          Icon(Icons.flag, color: Colors.white),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => changeLanguage("EN"),
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: currentLang == "EN" ? const Color(0xffFFB83B) : Colors.transparent,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Image.asset("assets/images/EN.png", height: 30),
                     ),
-                    SizedBox(width: 10),
-                    Image.asset(
-                      "assets/images/EG.png",
-                      height: 25,
-                      errorBuilder: (c, e, s) =>
-                          Icon(Icons.flag, color: Colors.white),
+                  ),
+                  const SizedBox(width: 20),
+                  GestureDetector(
+                    onTap: () => changeLanguage("AR"),
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: currentLang == "AR" ? const Color(0xffFFB83B) : Colors.transparent,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Image.asset("assets/images/EG.png", height: 30),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -240,21 +293,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget buildField(
-    IconData icon,
-    String text,
-    TextEditingController controller, {
-    TextInputType type = TextInputType.text,
-  }) {
+      IconData icon,
+      String text,
+      TextEditingController controller, {
+        TextInputType type = TextInputType.text,
+      }) {
     return TextField(
       controller: controller,
       keyboardType: type,
-      style: TextStyle(color: Colors.white),
+      textAlign: currentLang == "AR" ? TextAlign.right : TextAlign.left,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Color(0xff282A28),
+        fillColor: const Color(0xff282A28),
         prefixIcon: Icon(icon, color: Colors.white),
         hintText: text,
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: const TextStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
@@ -264,19 +318,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget buildPasswordField(
-    String text,
-    TextEditingController controller,
-    bool obscure,
-    VoidCallback press,
-  ) {
+      String text,
+      TextEditingController controller,
+      bool obscure,
+      VoidCallback press,
+      ) {
     return TextField(
       controller: controller,
       obscureText: obscure,
-      style: TextStyle(color: Colors.white),
+      textAlign: currentLang == "AR" ? TextAlign.right : TextAlign.left,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Color(0xff282A28),
-        prefixIcon: Icon(Icons.lock, color: Colors.white),
+        fillColor: const Color(0xff282A28),
+        prefixIcon: const Icon(Icons.lock, color: Colors.white),
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off : Icons.visibility,
@@ -285,7 +340,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           onPressed: press,
         ),
         hintText: text,
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: const TextStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,

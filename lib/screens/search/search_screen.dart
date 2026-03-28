@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/services/api_services.dart';
 import 'package:movie_app/models/movie_model.dart';
 import 'package:movie_app/widgets/movie_card.dart';
+import 'package:movie_app/screens/movie_details/movie_details_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -111,7 +112,20 @@ class _SearchScreenState extends State<SearchScreen> {
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
-      itemBuilder: (context, index) => MovieCard(movie: searchResults[index]),
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    MovieDetailsScreen(movie: searchResults[index]),
+              ),
+            );
+          },
+          child: MovieCard(movie: searchResults[index]),
+        );
+      },
     );
   }
 }

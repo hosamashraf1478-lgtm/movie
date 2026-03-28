@@ -1,0 +1,15 @@
+{
+  "movie_app": "Movie App",
+  "email": "Email",
+  "password": "Password",
+  "forget_password": "Forget Password?",
+  "login": "Login",
+  "create_account": "Create Account",
+  "or": "OR",
+  "login_with_google": "Login With Google",
+  "enter_email_password": "Please enter email and password",
+  "login_failed": "Login Failed",
+  "no_user_found": "No user found for that email",
+  "wrong_password": "Wrong password provided",
+  "something_went_wrong": "Something went wrong"
+}

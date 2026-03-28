@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/models/movie_model.dart';
 import 'package:movie_app/widgets/movie_card.dart';
+import 'package:movie_app/screens/movie_details/movie_details_screen.dart';
 
 class SeeMoreScreen extends StatelessWidget {
   final List<MovieModel> movies;
@@ -27,6 +28,7 @@ class SeeMoreScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: GridView.builder(
+          physics: const BouncingScrollPhysics(),
           itemCount: movies.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -35,7 +37,18 @@ class SeeMoreScreen extends StatelessWidget {
             childAspectRatio: 0.6,
           ),
           itemBuilder: (context, index) {
-            return MovieCard(movie: movies[index]);
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MovieDetailsScreen(movie: movies[index]),
+                  ),
+                );
+              },
+              child: MovieCard(movie: movies[index]),
+            );
           },
         ),
       ),

@@ -5,6 +5,7 @@ import 'package:movie_app/widgets/movie_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:movie_app/screens/movie_details/movie_details_screen.dart';
 
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});
@@ -129,7 +130,15 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     return Stack(
                       children: [
                         GestureDetector(
-                          onTap: () => _playMovie(movie.url),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    MovieDetailsScreen(movie: movie),
+                              ),
+                            );
+                          },
                           child: MovieCard(movie: movie),
                         ),
 
@@ -157,7 +166,15 @@ class _BrowseScreenState extends State<BrowseScreen> {
                           child: Align(
                             alignment: Alignment.center,
                             child: GestureDetector(
-                              onTap: () => _playMovie(movie.url),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        MovieDetailsScreen(movie: movie),
+                                  ),
+                                );
+                              },
                               child: Icon(
                                 Icons.play_circle_outline,
                                 color: Colors.white.withOpacity(0.8),
